@@ -540,6 +540,30 @@ credentials.json
 secrets/
 config/secrets.yml
 
+# Forbidden Agent Files (ZERO TOLERANCE)
+AGENTS.md
+RULE.md
+copilot-instructions.md
+```
+
+### 1.6 Forbidden Files Protocol (ZERO TOLERANCE)
+
+**Authority:** The CI pipeline MUST explicitly reject any commit containing Agent Instruction Files.
+
+**Forbidden Files:**
+- `AGENTS.md` (in root or any folder)
+- `RULE.md`
+- `copilot-instructions.md`
+- Any file matching `00-project-references/` content structure.
+
+**Action:**
+- **Reject Commit**: Check status MUST fail.
+- **Rollback**: If pushed, the commit MUST be reverted immediately.
+- **Alert**: User must be notified of the security violation.
+
+> [!CRITICAL]
+> **NEVER EVER push agent instruction files.** These contain internal logic and must remain local-only or in the `00-project-references` submodule.
+
 # Dependencies
 node_modules/
 venv/

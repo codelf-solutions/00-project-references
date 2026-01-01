@@ -146,6 +146,24 @@ Complex branching model with multiple long-lived branches (master, develop, feat
 >
 > **Protocol**: If this failure occurs, **notify the user** immediately with a note explaining the limitation. Do not retry endlessly. Proceed with manual discipline (no direct pushes).
 
+### 1.6 Forbidden Files Protocol (ZERO TOLERANCE)
+
+**Authority:** The CI pipeline MUST explicitly reject any commit containing Agent Instruction Files.
+
+**Forbidden Files:**
+- `AGENTS.md` (in root or any folder)
+- `RULE.md`
+- `copilot-instructions.md`
+- Any file matching `00-project-references/` content structure.
+
+**Action:**
+- **Reject Commit**: Check status MUST fail.
+- **Rollback**: If pushed, the commit MUST be reverted immediately.
+- **Alert**: User must be notified of the security violation.
+
+> [!CRITICAL]
+> **NEVER EVER push agent instruction files.** These contain internal logic and must remain local-only or in the `00-project-references` submodule.
+
 ---
 
 ## Section 2: Pipeline Architecture and Best Practices
