@@ -122,6 +122,27 @@ Complex branching model with multiple long-lived branches (master, develop, feat
 
 ---
 
+### 1.5 Branch Protection Standards (MANDATORY)
+
+**Authority:** All production-facing branches (main/master/trunk) **MUST** have protection rules enabled on the platform (GitHub/GitLab/Bitbucket).
+
+**Required Settings:**
+- [x] **Require a pull request before merging:** No direct commits to main.
+- [x] **Require status checks to pass before merging:**
+  - Build must pass
+  - Linting must pass
+  - Tests must pass
+- [x] **Require branches to be up to date before merging**
+- [x] **Do not allow bypassing the above settings:** Even for admins.
+- [x] **Restrict pushes:** Prevents `git push --force`.
+
+**Why:**
+- **Prevents Calamities:** Stops accidental history rewrites.
+- **Enforces Workflow:** Makes the PR workflow mandatory, not optional.
+- **Guarantees Quality:** Ensures no broken code (failed builds) ever reaches production.
+
+---
+
 ## Section 2: Pipeline Architecture and Best Practices
 
 ### 2.1 Core Pipeline Principles
