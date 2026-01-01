@@ -389,6 +389,34 @@ for manual page refresh after MFA verification.
 
 ## Section 5A: CI/CD Standards (READ ONLY WHEN PERFORMING CI/CD OPERATIONS)
 
+### 5A.1 Git Remote & PR Protocol (CRITICAL)
+
+**Before creating a Pull Request, you MUST check the git remote URL:**
+
+1.  **Check Remote:**
+    ```bash
+    git remote get-url origin
+    ```
+
+2.  **Evaluate:**
+    -   **HTTPS** (`https://...`) -> **Proceed**.
+    -   **SSH (Standard)** (`git@github.com:...`) -> **Proceed**.
+    -   **SSH (Alias)** (`git@alias:...`) -> **STOP**.
+
+3.  **Remediation (If Alias):**
+    If the URL uses an alias (e.g., `git@kibocha:codelf-solutions/adeo.git`), you MUST:
+    
+    a. **Note** the current alias URL.
+    b. **Temporarily switch** to standard GitHub URL:
+       ```bash
+       git remote set-url origin git@github.com:codelf-solutions/adeo.git
+       ```
+    c. **Create PR** via CLI or other tools.
+    d. **Restore** the original alias URL immediately:
+       ```bash
+       git remote set-url origin git@kibocha:codelf-solutions/adeo.git
+       ```
+
 **When performing CI/CD operations ONLY, read:**
 
 ```
