@@ -391,31 +391,16 @@ for manual page refresh after MFA verification.
 
 ### 5A.1 Git Remote & PR Protocol (CRITICAL)
 
-**Before creating a Pull Request, you MUST check the git remote URL:**
+1.  **Mandatory Alias Usage for Git Operations:**
+    *   For all standard git operations (`git push`, `git pull`, commit management), you **MUST** use the SSH alias URL (e.g., `git@alias:owner/repo.git`).
+    *   This is mandatory for identity management and access control.
 
-1.  **Check Remote:**
-    ```bash
-    git remote get-url origin
-    ```
-
-2.  **Evaluate:**
-    -   **HTTPS** (`https://...`) -> **Proceed**.
-    -   **SSH (Standard)** (`git@github.com:...`) -> **Proceed**.
-    -   **SSH (Alias)** (`git@alias:...`) -> **STOP**.
-
-3.  **Remediation (If Alias):**
-    If the URL uses an alias (e.g., `git@kibocha:codelf-solutions/adeo.git`), you MUST:
-    
-    a. **Note** the current alias URL.
-    b. **Temporarily switch** to standard GitHub URL:
-       ```bash
-       git remote set-url origin git@github.com:codelf-solutions/adeo.git
-       ```
-    c. **Create PR** via CLI or other tools.
-    d. **Restore** the original alias URL immediately:
-       ```bash
-       git remote set-url origin git@kibocha:codelf-solutions/adeo.git
-       ```
+2.  **Exception for GitHub CLI (`gh`) Users:**
+    *   The GitHub CLI (`gh`) does not support custom SSH aliases.
+    *   **ONLY** when performing operations that require `gh` (like creating a Pull Request):
+        a. **Temporarily switch** to the standard GitHub URL (`git@github.com:...`).
+        b. **Perform the `gh` operation** (e.g., `gh pr create`).
+        c. **IMMEDIATELY restore** the SSH alias URL.
 
 **Handling Branch Protection Failures:**
 If attempting to apply branch protection rules (via `gh` or API) fails with an "Upgrade to Pro" message:

@@ -122,29 +122,32 @@ Complex branching model with multiple long-lived branches (master, develop, feat
 
 ---
 
-### 1.5 Branch Protection Standards (MANDATORY)
+### 1.5 Branch Protection & Git Identity Standards (MANDATORY)
 
-**Authority:** All production-facing branches (main/master/trunk) **MUST** have protection rules enabled on the platform (GitHub/GitLab/Bitbucket).
+**1.5.1 Mandatory Alias Usage for Git Operations:**
+-   For all standard git operations (`git push`, `git pull`, commit management), you **MUST** use the SSH alias URL (e.g., `git@alias:owner/repo.git`).
+-   This is mandatory for identity management and access control.
 
-**Required Settings:**
-- [x] **Require a pull request before merging:** No direct commits to main.
-- [x] **Require status checks to pass before merging:**
-  - Build must pass
-  - Linting must pass
-  - Tests must pass
-- [x] **Require branches to be up to date before merging**
-- [x] **Do not allow bypassing the above settings:** Even for admins.
-- [x] **Restrict pushes:** Prevents `git push --force`.
+**1.5.2 Exception for GitHub CLI (`gh`) Users:**
+-   The GitHub CLI (`gh`) does not support custom SSH aliases.
+-   **ONLY** when performing operations that require `gh` (like creating a Pull Request):
+    a. **Temporarily switch** to the standard GitHub URL (`git@github.com:...`).
+    b. **Perform the `gh` operation** (e.g., `gh pr create`).
+    c. **IMMEDIATELY restore** the SSH alias URL.
 
-**Why:**
-- **Prevents Calamities:** Stops accidental history rewrites.
-- **Enforces Workflow:** Makes the PR workflow mandatory, not optional.
-- **Guarantees Quality:** Ensures no broken code (failed builds) ever reaches production.
+**1.5.3 Branch Protection Rules:**
+-   [x] **Require a pull request before merging:** No direct commits to main.
+-   [x] **Require status checks to pass before merging:**
+    - Build must pass
+    - Linting must pass
+    - Tests must pass
+-   [x] **Require branches to be up to date before merging**
+-   [x] **Do not allow bypassing the above settings:** Even for admins.
+-   [x] **Restrict pushes:** Prevents `git push --force`.
 
-> [!WARNING]
-> **Free Plan Limitation**: If Branch Protection Rules fail to apply via CLI with a 403/Upgrade error, it is likely because the Organization is on a **GitHub Free** plan with **Private** repositories. These features are locked.
->
-> **Protocol**: If this failure occurs, **notify the user** immediately with a note explaining the limitation. Do not retry endlessly. Proceed with manual discipline (no direct pushes).
+**Handling Branch Protection Failures:**
+-   If Branch Protection Rules fail to apply via CLI with a 403/Upgrade error, it is likely because the Organization is on a **GitHub Free** plan with **Private** repositories.
+-   **Protocol**: Notify the user immediately. Do not retry endlessly. Proceed with manual discipline.
 
 ### 1.6 Forbidden Files Protocol (ZERO TOLERANCE)
 
