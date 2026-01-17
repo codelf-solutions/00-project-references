@@ -10,6 +10,37 @@ This framework provides canonical standards for production-grade technical docum
 
 ---
 
+## CRITICAL: Documentation Format Standards
+
+**This project uses enterprise-grade documentation formats:**
+
+### API Documentation
+- **Format:** OpenAPI 3.0+ (formerly Swagger)
+- **File Extension:** `.yaml` or `.json`
+- **Location:** `/api-specs/` or `/docs/api-specs/`
+- **Tools:** Swagger UI, Redoc, OpenAPI Generator
+- **Validation:** `swagger-cli validate`, `openapi-generator validate`
+
+### All Other Technical Documentation
+- **Format:** reStructuredText (.rst)
+- **File Extension:** `.rst`
+- **Location:** `/docs/source/`
+- **Tools:** Sphinx, Read the Docs
+- **Build:** `sphinx-build -b html source build`
+
+### Deprecated Formats (Reference Only)
+- **Markdown (.md):** Existing canon examples in `01-documentation-canons/` are provided in Markdown for historical reference and ease of understanding
+- **Usage:** Canon files themselves remain in Markdown for agent readability
+- **Actual Documentation:** All production documentation MUST be in reStructuredText (.rst) or OpenAPI
+- **Exception:** README.md, CHANGELOG.md, and ADRs may use Markdown
+
+**Critical Rule:** When generating documentation:
+1. API specs → OpenAPI (.yaml)
+2. Technical docs → reStructuredText (.rst)
+3. Canon examples are Markdown → translate to .rst in production
+
+---
+
 ## When to Use This Framework
 
 **USE this framework when:**
@@ -204,12 +235,14 @@ See `03-reference/access-levels.md` for detailed classification guide.
 ### Documentation Formats
 
 This framework standardizes on:
-- **reStructuredText (reST)** - All narrative documentation
-- **Sphinx** - Documentation generation tool
-- **OpenAPI YAML** - REST API specifications
-- **GraphQL SDL** - GraphQL API schemas
-- **Protocol Buffers (Proto3)** - gRPC service definitions
-- **Markdown** - ADRs, README, CHANGELOG only
+- **reStructuredText (.rst)** - ALL narrative documentation (architecture, deployment, operations, database, security, testing, user guides, configuration)
+- **OpenAPI 3.0+ (.yaml)** - REST API specifications
+- **Sphinx** - Documentation generation and build tool
+- **GraphQL SDL** - GraphQL API schemas (if applicable)
+- **Protocol Buffers (Proto3)** - gRPC service definitions (if applicable)
+- **Markdown (.md)** - ONLY for: ADRs, README.md, CHANGELOG.md, and canon documentation files
+
+**IMPORTANT:** Canon examples in `01-documentation-canons/` are written in Markdown for agent readability, but production documentation MUST be generated in reStructuredText (.rst) or OpenAPI (.yaml) formats.
 
 ---
 

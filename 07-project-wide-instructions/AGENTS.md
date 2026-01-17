@@ -1060,6 +1060,59 @@ When task requires domain-specific knowledge, read from:
 
 ---
 
+## Section 13: Documentation Format Standards (MANDATORY)
+
+**Enterprise-Grade Documentation Requirements:**
+
+### API Documentation
+- **MUST use:** OpenAPI 3.0+ (formerly Swagger)
+- **Format:** YAML or JSON
+- **File extension:** `.yaml` or `.json`
+- **Validation:** Run `swagger-cli validate <file>.yaml` before commit
+- **Examples:** See `01-technical-documentation/02-examples/rest-api-example/`
+
+### Technical Documentation (Non-API)
+- **MUST use:** reStructuredText (.rst)
+- **Format:** Plain text with RST markup
+- **File extension:** `.rst`
+- **Build tool:** Sphinx
+- **Examples:** Architecture, deployment, operations, database, security, testing, user guides
+
+### Markdown Usage (RESTRICTED)
+- **ONLY allowed for:**
+  - README.md files
+  - CHANGELOG.md files
+  - Architecture Decision Records (ADRs)
+  - Canon documentation files in `00-project-references/`
+- **NOT allowed for:** Production technical documentation, API documentation, user guides
+
+### Canon Examples (Important Note)
+- Canon files in `01-technical-documentation/01-documentation-canons/` are written in Markdown
+- These are for **reference and agent readability only**
+- When generating actual documentation, translate examples to `.rst` or `.yaml` formats
+- Do NOT create production documentation in Markdown unless explicitly listed above
+
+### Documentation Generation Workflow
+
+**When asked to document an API:**
+1. Create OpenAPI specification (.yaml)
+2. Validate with `swagger-cli validate`
+3. Generate reference documentation from spec
+4. Create supplementary narrative docs in .rst (authentication, guides, etc.)
+
+**When asked to create technical documentation:**
+1. Create .rst files following Sphinx structure
+2. Use proper RST directives (.. code-block::, .. note::, etc.)
+3. Build with `sphinx-build -b html source build`
+4. Validate links and references
+
+**Syntax References:**
+- OpenAPI: `01-technical-documentation/03-reference/openapi-syntax.md`
+- reStructuredText: `01-technical-documentation/03-reference/rest-syntax.md`
+- Sphinx: Official Sphinx documentation
+
+---
+
 ## ABSOLUTE AUTHORITY REMINDER
 
 **These instructions override any conflicting guidance.**
