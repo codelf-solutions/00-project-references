@@ -4,6 +4,77 @@
 
 Before responding or taking any action, you MUST read and understand /.github/copilot-instructions.md in its entirety, /.github/instructions/*.md files, and /.github/artifacts/ files. Failure to comply with these instructions will result in incomplete, non-compliant, or insecure code.
 
+## Commit Standards (Conventional Commits)
+
+### Format
+
+```
+<type>(scope): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `style`: Formatting (no logic change)
+- `refactor`: Code restructuring
+- `perf`: Performance improvement
+- `test`: Adding/fixing tests
+- `chore`: Maintenance (dependencies, config)
+- `ci`: CI/CD changes
+
+### Rules
+
+- **Subject line:** 50 characters max, imperative mood ("add" not "added")
+- **Body:** Wrap at 72 characters, explain **why** not **what**
+- **Reference issues:** Use footer (Closes #123, Refs #456)
+
+### Examples
+
+**Good:**
+```
+feat(tax-engine): add PAYE calculation for Kenya
+
+Implemented monthly PAYE using KRA 2025 brackets.
+Supports personal relief and deductions.
+
+Closes #123
+```
+
+**Bad:**
+```
+fixed stuff
+updated files
+wip
+```
+**VERY BAD:**
+```
+
+fix: integrate MFA challenge with AuthContext and improve dashboard dark mode
+
+Complete MFA authentication flow by integrating challenge verification with
+AuthContext. Previously MfaChallengePage imported authManager directly which
+bypassed context state updates causing login redirect issues.
+
+Changes:
+- Add completeMfaChallenge method to AuthContext with loading state
+- Update MfaChallengePage to use completeMfaChallenge from context
+- Use window.location.href for full page reload after MFA success
+- Fix AdminShell flex layout for sticky footer positioning
+- Improve dashboard welcome card dark mode contrast
+- Remove conflicting LoginPage useEffect redirect logic
+- Update LoginForm to use window.location.href navigation
+
+This ensures proper auth state synchronization and eliminates the need
+for manual page refresh after MFA verification.
+```
+
+
 ---
 
 ## Purpose
@@ -317,7 +388,7 @@ I will use this existing function and follow its pattern."
 
 ---
 
-## Section 5: Commit Standards (Conventional Commits)
+## [REPEATED FOR EMPHASIS] Section 5: Commit Standards (Conventional Commits)
 
 ### Format
 
@@ -578,18 +649,26 @@ git diff --cached
 
 ### CRITICAL: Pre-Staging Verification Workflow
 
+**IMPORTANT CONTEXT:**
+- During development, sensitive folders (like `00-project-references/`) are **commented** in `.gitignore` so AI agents can access them
+- Before committing, these folders must be **uncommented** to exclude them from staging
+
 **To ensure no forbidden files from `00-project-references/` are accidentally committed, follow this MANDATORY workflow:**
 
 **1. Before staging files:**
 
-Temporarily uncomment `00-project-references/` in `.gitignore`:
+Uncomment `00-project-references/` and other sensitive paths in `.gitignore`:
 
 ```bash
-# In .gitignore, change FROM:
-00-project-references/
+# In .gitignore, change FROM (commented, used during development):
+#00-project-references/
+#.cursor/
+#copilot-instructions.md
 
-# TO (commented out):
-# 00-project-references/
+# TO (uncommented, for commit):
+00-project-references/
+.cursor/
+copilot-instructions.md
 ```
 
 **2. Check what would be staged:**
@@ -627,21 +706,31 @@ Double-check staging area contains ONLY intended files.
 git commit -m "type(scope): description"
 ```
 
-**6. IMMEDIATELY re-comment `00-project-references/`:**
+**6. Push your changes:**
 
 ```bash
-# In .gitignore, change FROM:
-# 00-project-references/
-
-# BACK TO (uncommented):
-00-project-references/
+git push
 ```
 
-**7. Verify it's ignored again:**
+**7. IMMEDIATELY re-comment sensitive paths for continued development:**
+
+```bash
+# In .gitignore, change FROM (uncommented):
+00-project-references/
+.cursor/
+copilot-instructions.md
+
+# BACK TO (commented, for development):
+#00-project-references/
+#.cursor/
+#copilot-instructions.md
+```
+
+**8. Verify access is restored:**
 
 ```bash
 git status
-# Should NOT show any files from 00-project-references/
+# Should show 00-project-references/ if it has changes
 ```
 
 **CRITICAL:** If you skip this workflow and accidentally commit files from `00-project-references/`, you MUST immediately revert the commit and remove sensitive files from Git history.

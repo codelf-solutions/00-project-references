@@ -2,6 +2,79 @@
 
 > **CRITICAL**: These instructions have ABSOLUTE AUTHORITY and MUST be followed at all times, whether explicitly instructed to or not. These are not guidelines or suggestions - they are mandatory requirements for all AI coding assistants working on this project.
 
+Before responding or taking any action, you MUST read and understand /.github/copilot-instructions.md in its entirety, /.github/instructions/*.md files, and /.github/artifacts/ files. Failure to comply with these instructions will result in incomplete, non-compliant, or insecure code.
+
+## Commit Standards (Conventional Commits)
+
+### Format
+
+```
+<type>(scope): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `style`: Formatting (no logic change)
+- `refactor`: Code restructuring
+- `perf`: Performance improvement
+- `test`: Adding/fixing tests
+- `chore`: Maintenance (dependencies, config)
+- `ci`: CI/CD changes
+
+### Rules
+
+- **Subject line:** 50 characters max, imperative mood ("add" not "added")
+- **Body:** Wrap at 72 characters, explain **why** not **what**
+- **Reference issues:** Use footer (Closes #123, Refs #456)
+
+### Examples
+
+**Good:**
+```
+feat(tax-engine): add PAYE calculation for Kenya
+
+Implemented monthly PAYE using KRA 2025 brackets.
+Supports personal relief and deductions.
+
+Closes #123
+```
+
+**Bad:**
+```
+fixed stuff
+updated files
+wip
+```
+**VERY BAD:**
+```
+
+fix: integrate MFA challenge with AuthContext and improve dashboard dark mode
+
+Complete MFA authentication flow by integrating challenge verification with
+AuthContext. Previously MfaChallengePage imported authManager directly which
+bypassed context state updates causing login redirect issues.
+
+Changes:
+- Add completeMfaChallenge method to AuthContext with loading state
+- Update MfaChallengePage to use completeMfaChallenge from context
+- Use window.location.href for full page reload after MFA success
+- Fix AdminShell flex layout for sticky footer positioning
+- Improve dashboard welcome card dark mode contrast
+- Remove conflicting LoginPage useEffect redirect logic
+- Update LoginForm to use window.location.href navigation
+
+This ensures proper auth state synchronization and eliminates the need
+for manual page refresh after MFA verification.
+```
+
+
 ---
 
 ## Purpose
@@ -162,11 +235,11 @@ This protocol has FOUR mandatory phases that MUST be followed for ALL developmen
    
    Read ONLY the READMEs in `00-project-references/` to determine which domains are relevant:
    - `00-technical-documentation/` - If creating/updating documentation
-   - `02-security/` - If handling authentication, encryption, or sensitive data
-   - `03-ci-cd/` - If working with Git, commits, or pipelines
-   - `04-testing/` - If writing tests or test-related code
-   - `05-programming-standards/` - If writing application code
-   - `06-deployment/` - If handling infrastructure or deployment
+   - `01-security/` - If handling authentication, encryption, or sensitive data
+   - `02-ci-cd/` - If working with Git, commits, or pipelines
+   - `03-testing/` - If writing tests or test-related code
+   - `04-programming-standards/` - If writing application code
+   - `05-deployment/` - If handling infrastructure or deployment
 
    **Load ONLY what's needed for the current task.**
 
@@ -315,7 +388,7 @@ I will use this existing function and follow its pattern."
 
 ---
 
-## Section 5: Commit Standards (Conventional Commits)
+## [REPEATED FOR EMPHASIS] Section 5: Commit Standards (Conventional Commits)
 
 ### Format
 
@@ -576,18 +649,26 @@ git diff --cached
 
 ### CRITICAL: Pre-Staging Verification Workflow
 
+**IMPORTANT CONTEXT:**
+- During development, sensitive folders (like `00-project-references/`) are **commented** in `.gitignore` so AI agents can access them
+- Before committing, these folders must be **uncommented** to exclude them from staging
+
 **To ensure no forbidden files from `00-project-references/` are accidentally committed, follow this MANDATORY workflow:**
 
 **1. Before staging files:**
 
-Temporarily uncomment `00-project-references/` in `.gitignore`:
+Uncomment `00-project-references/` and other sensitive paths in `.gitignore`:
 
 ```bash
-# In .gitignore, change FROM:
-00-project-references/
+# In .gitignore, change FROM (commented, used during development):
+#00-project-references/
+#.cursor/
+#copilot-instructions.md
 
-# TO (commented out):
-# 00-project-references/
+# TO (uncommented, for commit):
+00-project-references/
+.cursor/
+copilot-instructions.md
 ```
 
 **2. Check what would be staged:**
@@ -625,28 +706,36 @@ Double-check staging area contains ONLY intended files.
 git commit -m "type(scope): description"
 ```
 
-**6. IMMEDIATELY re-comment `00-project-references/`:**
+**6. Push your changes:**
 
 ```bash
-# In .gitignore, change FROM:
-# 00-project-references/
-
-# BACK TO (uncommented):
-00-project-references/
+git push
 ```
 
-**7. Verify it's ignored again:**
+**7. IMMEDIATELY re-comment sensitive paths for continued development:**
+
+```bash
+# In .gitignore, change FROM (uncommented):
+00-project-references/
+.cursor/
+copilot-instructions.md
+
+# BACK TO (commented, for development):
+#00-project-references/
+#.cursor/
+#copilot-instructions.md
+```
+
+**8. Verify access is restored:**
 
 ```bash
 git status
-# Should NOT show any files from 00-project-references/
+# Should show 00-project-references/ if it has changes
 ```
 
 **CRITICAL:** If you skip this workflow and accidentally commit files from `00-project-references/`, you MUST immediately revert the commit and remove sensitive files from Git history.
 
 ---
-
-## Section 7: Security Standards and Checklist
 
 ### MANDATORY: Read Security Canon Folder Structure
 
@@ -656,7 +745,7 @@ git status
 02-security/README.md
 ```
 
-**CRITICAL:** The security canon is now **modular** across 8 numbered folders. Read `02-security/README.md` first to understand the structure, then navigate to specific files as needed. Security standards may have been updated, and you must use the latest version. This is NON-NEGOTIABLE.
+**CRITICAL:** The security canon is now **modular** across 9 numbered folders. Read `02-security/README.md` first to understand the structure, then navigate to specific files as needed. Security standards may have been updated, and you must use the latest version. This is NON-NEGOTIABLE.
 
 **Modular Structure:**
 - `01-access-and-authentication/` - Access control, RBAC, ABAC, MFA, session management
@@ -672,7 +761,7 @@ git status
 **When to read:**
 - Before implementing authentication or authorization → `01-access-and-authentication/`
 - Before handling user input or database queries → `02-injection-prevention/`
-- Before implementing file uploads or API endpoints → `03-request-and-file-security/`
+- Before implementing file uploads or API endpoints → `03-request-and-file-security/` or `09-api-security/`
 - Before managing secrets or encryption → `04-cryptography-and-transport/`
 - Before any security-related code → Read `02-security/README.md` first
 
@@ -716,26 +805,166 @@ git status
 
 ---
 
-## Section 8: Anti-Pattern Prevention
+## Section 8: Artifact Management System
 
-### NO Summary Documents
+### Artifact Files (MANDATORY USAGE)
 
-**NEVER create:**
+**All development sessions MUST use artifact files located in `.github/artifacts/`:**
+
+- **`tasks.md`** - Current task list and status
+- **`implementation-plan.md`** - Current implementation approach
+- **`walkthrough.md`** - Chronological development history
+
+### Artifact Usage Protocol
+
+#### BEFORE Starting Work (Pre-Execution)
+
+1. **Read all three artifacts** to understand context:
+   ```
+   - Read `.github/artifacts/tasks.md` - See pending tasks
+   - Read `.github/artifacts/implementation-plan.md` - Understand current plan
+   - Read `.github/artifacts/walkthrough.md` - Review recent history
+   ```
+
+2. **Update `tasks.md`** [OVERWRITE]:
+   ```markdown
+   # Tasks
+   
+   ## Current Session: [Brief Title]
+   
+   ### Active Tasks
+   - [ ] Task 1 description
+   - [ ] Task 2 description
+   - [ ] Task 3 description
+   
+   ### Completed
+   - [x] Previously completed task
+   
+   ---
+   Last Updated: 2026-01-17 14:30 EAT
+   ```
+
+3. **Update `implementation-plan.md`** [OVERWRITE]:
+   ```markdown
+   # Implementation Plan
+   
+   ## Session: [Brief Title]
+   Date: 2026-01-17
+   
+   ## Context
+   Brief explanation of what we're building and why.
+   
+   ## Technical Approach
+   
+   ### Architecture Decisions
+   - Decision 1 with rationale
+   - Decision 2 with rationale
+   
+   ### Implementation Steps
+   1. Step 1 - What and why
+   2. Step 2 - What and why
+   3. Step 3 - What and why
+   
+   ### Standards Applied
+   - Security: 02-security/01-access-and-authentication/
+   - Programming: 05-programming-standards/rust-standards.md
+   
+   ### Files to Create/Modify
+   - `path/to/file1.rs` - Purpose
+   - `path/to/file2.ts` - Purpose
+   
+   ---
+   Last Updated: 2026-01-17 14:30 EAT
+   ```
+
+#### DURING Work (Execution)
+
+1. **Update `tasks.md`** [OVERWRITE] as you complete tasks:
+   ```markdown
+   - [x] Completed task (move to Completed section)
+   - [ ] Current task in progress
+   ```
+
+2. **Reference `implementation-plan.md`** to stay on track - no updates needed during execution
+
+#### AFTER Work (Post-Execution)
+
+1. **Ensure `tasks.md`** [OVERWRITE] reflects final state:
+   ```markdown
+   ### Completed
+   - [x] All completed tasks listed here
+   
+   ### Remaining (if any)
+   - [ ] Tasks not completed in this session
+   ```
+
+2. **Update `walkthrough.md`** [APPEND]:
+   ```markdown
+   ## 2026-01-17 14:30 EAT - [Session Title]
+   
+   **Context**: Why this work was needed
+   
+   **Actions Taken**:
+   - Implemented feature X in `path/to/file.rs`
+   - Added tests for Y in `path/to/test.rs`
+   - Updated configuration Z
+   
+   **Technical Decisions**:
+   - Chose approach A over B because [rationale]
+   - Used pattern X for [reason]
+   
+   **Standards Applied**:
+   - Security: 02-security/01-access-and-authentication/
+   - Testing: 04-testing/testing-canon.md
+   
+   **Outcomes**:
+   - Feature X fully implemented and tested
+   - All security checks passed
+   - Ready for: [next steps or deployment]
+   
+   **Known Issues/Tech Debt**:
+   - None OR list any known issues
+   
+   ---
+   ```
+
+### Key Rules
+
+**OVERWRITABLE Artifacts** (replace entire content):
+- `tasks.md` - Always shows CURRENT task state
+- `implementation-plan.md` - Always shows CURRENT plan
+
+**APPENDABLE Artifacts** (add to bottom, preserve history):
+- `walkthrough.md` - Chronological log, NEVER delete previous entries
+
+### Anti-Patterns (FORBIDDEN)
+
+**NEVER create these files:**
 - `SUMMARY.md`
 - `overview.md`
 - `analysis.md`
 - `findings.md`
 - `notes.md`
+- `task.md` (wrong name - use `tasks.md`)
 
-**If you need to provide a summary:**
+**If you need to communicate with user:**
+- **During work**: Update artifacts as specified above
+- **Quick updates**: Write in chat for immediate visibility
+- **Session summaries**: Append to `walkthrough.md`
 
-**Option A (if structure exists):**
-- Use `task.md` [OVERWRITE]
-- Use `implementation-plan.md` [OVERWRITE]
-- Use `walkthrough.md` [APPEND]
+### When to Skip Artifacts
 
-**Option B (preferred):**
-- Write summary **in chat** (user reads immediately)
+**Only skip artifacts for:**
+- Trivial single-command operations
+- Pure informational queries
+- Simple file reads without modifications
+
+**For all development work (code changes, configuration, setup):**
+- Artifacts are **MANDATORY**
+
+---
+
+## Section 9: Temporary Files Management
 
 ### NO Temporary Files Littering Project
 
@@ -763,7 +992,7 @@ project-root/
 
 ---
 
-## Section 9: Documentation Access Levels
+## Section 10: Documentation Access Levels
 
 **ALL documentation MUST be classified:**
 
@@ -786,7 +1015,7 @@ Where should this be stored?"
 
 ---
 
-## Section 10: Design Principles by Context
+## Section 11: Design Principles by Context
 
 **Apply appropriate principles based on task:**
 
@@ -813,18 +1042,18 @@ Where should this be stored?"
 
 ---
 
-## Section 11: Reference File Structure
+## Section 12: Reference File Structure
 
 When task requires domain-specific knowledge, read from:
 
 ```
 00-project-references/
 ├── 00-technical-documentation/  # Use when: Creating/updating documentation
-├── 02-security/                 # Use when: Auth, encryption, sensitive data
-├── 03-ci-cd/                    # Use when: Git, commits, pipelines
-├── 04-testing/                  # Use when: Writing tests
-├── 05-programming-standards/    # Use when: Writing application code
-└── 06-deployment/               # Use when: Infrastructure, deployment
+├── 01-security/                 # Use when: Auth, encryption, sensitive data
+├── 02-ci-cd/                    # Use when: Git, commits, pipelines
+├── 03-testing/                  # Use when: Writing tests
+├── 04-programming-standards/    # Use when: Writing application code
+└── 05-deployment/               # Use when: Infrastructure, deployment
 ```
 
 **Read README.md in each folder to find specific files.**
