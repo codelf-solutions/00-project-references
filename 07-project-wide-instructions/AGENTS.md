@@ -388,78 +388,6 @@ I will use this existing function and follow its pattern."
 
 ---
 
-## [REPEATED FOR EMPHASIS] Section 5: Commit Standards (Conventional Commits)
-
-### Format
-
-```
-<type>(scope): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-### Types
-
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Formatting (no logic change)
-- `refactor`: Code restructuring
-- `perf`: Performance improvement
-- `test`: Adding/fixing tests
-- `chore`: Maintenance (dependencies, config)
-- `ci`: CI/CD changes
-
-### Rules
-
-- **Subject line:** 50 characters max, imperative mood ("add" not "added")
-- **Body:** Wrap at 72 characters, explain **why** not **what**
-- **Reference issues:** Use footer (Closes #123, Refs #456)
-
-### Examples
-
-**Good:**
-```
-feat(tax-engine): add PAYE calculation for Kenya
-
-Implemented monthly PAYE using KRA 2025 brackets.
-Supports personal relief and deductions.
-
-Closes #123
-```
-
-**Bad:**
-```
-fixed stuff
-updated files
-wip
-```
-**VERY BAD:**
-```
-
-fix: integrate MFA challenge with AuthContext and improve dashboard dark mode
-
-Complete MFA authentication flow by integrating challenge verification with
-AuthContext. Previously MfaChallengePage imported authManager directly which
-bypassed context state updates causing login redirect issues.
-
-Changes:
-- Add completeMfaChallenge method to AuthContext with loading state
-- Update MfaChallengePage to use completeMfaChallenge from context
-- Use window.location.href for full page reload after MFA success
-- Fix AdminShell flex layout for sticky footer positioning
-- Improve dashboard welcome card dark mode contrast
-- Remove conflicting LoginPage useEffect redirect logic
-- Update LoginForm to use window.location.href navigation
-
-This ensures proper auth state synchronization and eliminates the need
-for manual page refresh after MFA verification.
-```
-
----
-
 ## Section 5A: CI/CD Standards (READ ONLY WHEN PERFORMING CI/CD OPERATIONS)
 
 ### 5A.1 Git Remote & PR Protocol (CRITICAL)
@@ -575,13 +503,25 @@ If attempting to apply branch protection rules (via `gh` or API) fails with an "
 
 ## Section 6: .gitignore Management (CRITICAL)
 
+### Git Submodules (NON-COMMITABLE)
+
+**CRITICAL:** This repository contains git submodules that have their own repositories and MUST NOT be committed to the main repository:
+
+- **`00-project-references/`** - Vibe Code Canon standards (separate repository)
+- **`docs/`** - Project documentation (separate repository)
+
+These submodules are managed independently with their own commit histories. Changes within these directories are tracked in their respective repositories, not in the main repository.
+
 ### Mandatory Exclusions
 
 **BEFORE first commit, ensure `.gitignore` includes:**
 
 ```gitignore
-# Project references and agent files
+# Git Submodules (have their own repositories)
 00-project-references/
+docs/
+
+# Project references and agent files
 .cursor/
 .github/copilot-instructions/
 AGENTS.md
@@ -606,13 +546,14 @@ copilot-instructions.md
 
 ### 1.6 Forbidden Files Protocol (ZERO TOLERANCE)
 
-**Authority:** The CI pipeline MUST explicitly reject any commit containing Agent Instruction Files.
+**Authority:** The CI pipeline MUST explicitly reject any commit containing Agent Instruction Files or Submodule Files.
 
 **Forbidden Files:**
 - `AGENTS.md` (in root or any folder)
 - `RULE.md`
 - `copilot-instructions.md`
-- Any file matching `00-project-references/` content structure.
+- Any file matching `00-project-references/` content structure
+- Any file from `docs/` submodule (managed in separate repository)
 
 **Action:**
 - **Reject Commit**: Check status MUST fail.
@@ -635,7 +576,8 @@ target/
 - [ ] No `.env` files in staging
 - [ ] No API keys, passwords, tokens in code
 - [ ] No files with `_key`, `_secret`, `_password` in name
-- [ ] `00-project-references/` is ignored
+- [ ] `00-project-references/` submodule is ignored
+- [ ] `docs/` submodule is ignored
 - [ ] No temporary files outside `scripts.tmp/` or `.bkp/`
 - [ ] No sensitive documentation (check access levels)
 
@@ -650,23 +592,26 @@ git diff --cached
 ### CRITICAL: Pre-Staging Verification Workflow
 
 **IMPORTANT CONTEXT:**
-- During development, sensitive folders (like `00-project-references/`) are **commented** in `.gitignore` so AI agents can access them
+- During development, sensitive folders and submodules (like `00-project-references/` and `docs/`) are **commented** in `.gitignore` so AI agents can access them
 - Before committing, these folders must be **uncommented** to exclude them from staging
+- **Git submodules** (`00-project-references/` and `docs/`) have their own repositories and must NEVER be committed to the main repository
 
-**To ensure no forbidden files from `00-project-references/` are accidentally committed, follow this MANDATORY workflow:**
+**To ensure no forbidden files or submodule files are accidentally committed, follow this MANDATORY workflow:**
 
 **1. Before staging files:**
 
-Uncomment `00-project-references/` and other sensitive paths in `.gitignore`:
+Uncomment submodules and sensitive paths in `.gitignore`:
 
 ```bash
 # In .gitignore, change FROM (commented, used during development):
 #00-project-references/
+#docs/
 #.cursor/
 #copilot-instructions.md
 
 # TO (uncommented, for commit):
 00-project-references/
+docs/
 .cursor/
 copilot-instructions.md
 ```
@@ -677,12 +622,13 @@ copilot-instructions.md
 git status
 ```
 
-Verify that NO files from `00-project-references/` appear in the untracked or modified files list.
+Verify that NO files from submodules or sensitive folders appear in the untracked or modified files list.
 
 **3. Verify forbidden files:**
 
 Check that NONE of these are visible in `git status`:
-- `00-project-references/` (any files within)
+- `00-project-references/` (git submodule - any files within)
+- `docs/` (git submodule - any files within)
 - `.cursor/` (any files within)
 - `.github/copilot-instructions/` (any files within)  
 - `AGENTS.md`
@@ -712,28 +658,64 @@ git commit -m "type(scope): description"
 git push
 ```
 
-**7. IMMEDIATELY re-comment sensitive paths for continued development:**
+**7. Push your changes:**
+
+```bash
+git push
+```
+
+**8. IMMEDIATELY re-comment submodules and sensitive paths for continued development:**
 
 ```bash
 # In .gitignore, change FROM (uncommented):
 00-project-references/
+docs/
 .cursor/
 copilot-instructions.md
 
 # BACK TO (commented, for development):
 #00-project-references/
+#docs/
 #.cursor/
 #copilot-instructions.md
 ```
 
-**8. Verify access is restored:**
+**9. Verify access is restored:**
 
 ```bash
 git status
-# Should show 00-project-references/ if it has changes
+# Should show 00-project-references/ and docs/ if they have changes
 ```
 
-**CRITICAL:** If you skip this workflow and accidentally commit files from `00-project-references/`, you MUST immediately revert the commit and remove sensitive files from Git history.
+**10. Handle Submodule Commits (Recursive):**
+
+If submodules (`00-project-references/` or `docs/`) have changes:
+
+```bash
+# For each submodule with changes:
+cd 00-project-references/  # or docs/
+
+# Check if this submodule has its own .gitignore with uncommitable files
+if [ -f .gitignore ]; then
+  # Uncomment any agent files or nested submodules in this submodule's .gitignore
+  # (Same pattern: change #AGENTS.md to AGENTS.md, etc.)
+  
+  # Stage and commit within the submodule
+  git add <files>
+  git status
+  git diff --cached
+  git commit -m "type(scope): description"
+  git push
+  
+  # Re-comment the files in this submodule's .gitignore
+  # (Restore commented state)
+fi
+
+# Return to main repository
+cd ..
+```
+
+**CRITICAL:** If you skip this workflow and accidentally commit files from submodules (`00-project-references/` or `docs/`), you MUST immediately revert the commit and remove those files from Git history. Submodules are managed in their own repositories.
 
 ---
 
