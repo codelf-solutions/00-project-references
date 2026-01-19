@@ -98,8 +98,15 @@ This canon system provides:
 │   │   ├── _grpc-api-canon.md                   # gRPC API documentation rules
 │   │   └── _internal-api-canon.md               # Internal API documentation rules
 │   │
+│   ├── documentation-ui/                        # Documentation UI/theming canons
+│   │   ├── _documentation-ui-canon.md           # UI/theming standards (Sphinx, Furo)
+│   │   └── _documentation-classification-canon.md # Public vs private classification
+│   │
+│   ├── deployment/                              # Deployment canons
+│   │   └── _documentation-deployment-canon.md   # Documentation hosting/deployment
+│   │
 │   ├── _architecture-canon.md                   # Architecture documentation rules
-│   ├── _deployment-canon.md                     # Deployment documentation rules
+│   ├── _deployment-canon.md                     # Deployment documentation rules (DEPRECATED - use deployment/)
 │   ├── _operations-canon.md                     # Operations/runbook rules
 │   ├── _database-canon.md                       # Database documentation rules
 │   ├── _security-canon.md                       # Security documentation rules
@@ -206,6 +213,11 @@ GitHub Actions workflow (`.github/workflows/docs.yml`) automatically:
 9. **User Documentation** - Guides, tutorials, FAQs
 10. **ADRs** - Architecture decision records
 11. **Changelogs** - Version history, release notes
+
+### Documentation Infrastructure (New)
+12. **Documentation UI/Theming** - Sphinx themes, navigation, accessibility, visual design
+13. **Documentation Classification** - Public vs private, access levels, security assessment
+14. **Documentation Deployment** - Hosting platforms, CI/CD automation, authentication
 
 ---
 
